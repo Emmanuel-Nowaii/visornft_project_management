@@ -3,17 +3,19 @@ import { useForm } from "react-hook-form";
 
 export default function AddNameLayer (props) {
 
+  
+
     const {register, handleSubmit, formState: { errors }} = useForm()
 
     const onSubmit = (data, e) => {
-      console.log(data)
+      // console.log(data)
       props.addNameLayer(data)
       e.target.reset()
     }
 
     return (
       <React.Fragment>
-        <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="form_textfield">
             <label htmlFor='name'>Nombre</label>
             <input 

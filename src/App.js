@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faPlus, faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AddNameLayer from "./AddNameLayer";
 import NamesLayer from "./NamesLayer";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
+import MeasureModifications from "./components/MeasureModifications";
 
 
 function App() {
@@ -14,6 +15,14 @@ function App() {
   const [imageWidth, setImageWidth] = useState("")
   const [imageHeigth, setImageHeigth] = useState("")
   const [layers, setLayers] = useState([])
+
+  const handleWidthChange = (newImageWidth)=>{
+    setImageWidth(newImageWidth);
+ }
+
+  const handleHeigthChange = (newImageHeigth)=>{
+    setImageHeigth(newImageHeigth);
+ }
 
   const readProjects = async () => {
       try {
@@ -30,23 +39,6 @@ function App() {
   useEffect(() => {
       readProjects()
   }, [])
-
-  const saveMeasures = () => {
-    axios.post(`http://pruebafront.nowaii.com/api/v1/collection/designer/7f0afe1efd2544bd8ff1a82ea1088df8/`, {
-      image_width: imageWidth,
-      image_heigth: imageHeigth,
-      layer_set: [
-        ...layers
-      ]
-    })
-    .then(function(response) {
-      console.log('Post exitoso', response)
-      setImageWidth("")
-      setImageHeigth("")
-      readProjects()
-    })
-    .catch(error => console.log(error))
-  }
 
   const addNameLayer = (layer) => {
       axios.post("http://pruebafront.nowaii.com/api/v1/collection/designer/7f0afe1efd2544bd8ff1a82ea1088df8/", {
@@ -99,69 +91,15 @@ function App() {
             </div>
             <div>
               <article>
-                <div className="card_content">
-                  <div className="project_head">
-                    <div className="button_show_modal tag">
-                      <span>Size</span>
-                      <div>{project.image_width}</div>
-                      <span>x</span>
-                      <div>{project.image_heigth}</div>
-                    </div>
-                    <div>
-                      {
-                        layers.length === 0 ?
-                          <button className="button_ui" disabled>
-                            <i>
-                              <FontAwesomeIcon icon={faRedo} />
-                            </i>
-                            Generate Collection
-                          </button>
-                        :
-                          <a href={`https://www.google.com.gt/search?q=[${project.slug}]`} className="button_ui">
-                            <i>
-                              <FontAwesomeIcon icon={faRedo} />
-                            </i>
-                            Generate Collection
-                          </a>
-                      }
-                    </div>
-                  </div>
-                  <div className="modal_ui modal_container">
-                      <button className="button_close_modal button_square_icon button_square_icon_bg button_square_icon_tr15">
-                        <FontAwesomeIcon icon={faClose} />
-                      </button>
-                      <div className="modal_content card_content">
-                        <h2 className="title_head">NFT Collection Settings</h2>
-                        <form className="mt-4" onSubmit={saveMeasures}>
-                          <div className="form_textfield">
-                            <label htmlFor='width'>Width</label>
-                            <input 
-                              type='text' 
-                              id='width' 
-                              value={imageWidth} 
-                              placeholder={project.image_width} 
-                              onChange={(e) => setImageWidth(e.target.value)} 
-                            />
-                          </div>
-                          <div className="form_textfield">
-                            <label htmlFor='heigth'>Heigth</label>
-                            <input 
-                              type='text' 
-                              id='heigth' 
-                              value={imageHeigth} 
-                              placeholder={project.image_heigth} 
-                              onChange={(e) => setImageHeigth(e.target.value)} 
-                            />
-                          </div>
-                          <div className="mt-3">
-                            <button className="button_ui button_ui_w100">
-                                Guardar
-                            </button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                </div>
+                <MeasureModifications 
+                  imageWidth={imageWidth} 
+                  imageHeigth={imageHeigth} 
+                  widthChange={handleWidthChange} 
+                  heigthChange={handleHeigthChange} 
+                  project={project}
+                  layers={layers}
+                  readProjects={readProjects}
+                />
               </article>
               <article className="mt-4">
                 
@@ -191,7 +129,11 @@ function App() {
                       </div>
                     </React.Fragment> 
                     :
-                    <NamesLayer layers={layers} />
+                    <NamesLayer 
+                      layers={layers} 
+                      readProjects={readProjects}
+                      setLayers={setLayers}
+                    />
                   }
               </article>
             </div>
